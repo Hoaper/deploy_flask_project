@@ -44,6 +44,9 @@ encoding_model = pickle.load(open(encoding_model_file_path, 'rb'))
 
 treshold = 0.281
 
+@app.route('/', methods=["GET"])
+def home():
+    return "Welcome to churn prediction site. Goto /predict"
 
 @app.route("/predict", methods=["POST"])
 def predict():
