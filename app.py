@@ -47,8 +47,8 @@ treshold = 0.281
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    customer = request.get_json()
-    data = pd.DataFrame(customer, index=[0])
+    customers = request.get_json()
+    data = pd.DataFrame(customers)
 
     scaler = MinMaxScaler()
 
@@ -65,13 +65,18 @@ def predict():
     X = encoding_model.transform(dicts_df)
     y_pred = model.predict_proba(X)[:, 1]
     churn_descision = (y_pred >= treshold)
+    
+    result = []
+    for i in range(len(df_copy)):
+        result.append({
+            "churn_descision": bool(churn_descision[i]),
+            "churn_probability": float(y_pred[i]),
+            "customer_id": df_copy["customerid"][i],
+        })
 
-    result = {
-        "churn_descision": bool(churn_descision[0]),
-        "churn_probability": float(y_pred[0])
-    }
 
     return jsonify(result)
 
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
